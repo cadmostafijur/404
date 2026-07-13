@@ -7,8 +7,8 @@ A full-stack 2-in-1 web app combining **task management** (Kanban board) and **i
 | | Link |
 |---|------|
 | Combined repo (GitHub) | https://github.com/cadmostafijur/404 |
-| Live Frontend | _Deploy and add your link here_ |
-| Live Backend API | _Deploy and add your link here_ |
+| Live Frontend | https://404-ivory.vercel.app/login |
+| Live Backend API | https://four04-pn5s.onrender.com|
 
 ## Demo Credentials
 
