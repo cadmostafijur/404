@@ -68,13 +68,34 @@ The API runs at **http://localhost:8000**.
 | `DJANGO_ALLOWED_HOSTS` | `localhost,127.0.0.1` | Comma-separated hosts |
 | `CORS_ALLOWED_ORIGINS` | `http://localhost:3000` | Frontend origins |
 
-## Deployment (PythonAnywhere / Render)
+## Deployment (Render)
 
-1. Set environment variables above.
-2. Run `python manage.py collectstatic`.
-3. Configure WSGI to point to `config.wsgi.application`.
-4. Serve `/media/` for uploaded images.
-5. Set `CORS_ALLOWED_ORIGINS` to your frontend URL.
+This repo is a monorepo (`frontend/` + `backend/`), so point Render at the
+`backend` subdirectory.
+
+1. Push to GitHub, then in [Render](https://render.com) create a **New Web
+   Service** from this repo.
+2. Set **Root Directory** to `backend`.
+3. **Build Command**: `pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate`
+4. **Start Command**: `gunicorn config.wsgi:application --bind 0.0.0.0:$PORT`
+5. Set environment variables (Render dashboard → Environment):
+   - `DJANGO_SECRET_KEY` — generate a fresh one, don't reuse the dev key
+   - `DJANGO_DEBUG` = `False`
+   - `DJANGO_ALLOWED_HOSTS` = `your-service.onrender.com`
+   - `CORS_ALLOWED_ORIGINS` = `https://your-frontend.vercel.app`
+6. After the first deploy, open the Render **Shell** tab and run
+   `python manage.py create_demo_user` to seed the demo login.
+7. Static files are served by WhiteNoise (already wired into
+   `MIDDLEWARE`/`STORAGES` in `config/settings.py`) — no separate static
+   host needed.
+
+**Persistence caveat:** Render's free web service disk is ephemeral — it's
+wiped on every redeploy (not on idle spin-down, only on new deploys). Since
+this app uses SQLite and stores uploaded annotation images on local disk,
+a redeploy after your first setup will reset the database and delete
+uploaded images. For a one-time demo/submission this is usually fine (redeploy
+once, seed the demo user, then avoid redeploying); for real persistence,
+add a Render persistent disk or switch to hosted Postgres + object storage.
 
 ## Villains Faced & How We Won
 

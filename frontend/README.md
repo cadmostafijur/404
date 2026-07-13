@@ -67,10 +67,21 @@ For production, set this to your deployed backend URL.
 
 ## Deployment (Vercel)
 
-1. Push this folder to a GitHub repo.
-2. Import the repo in [Vercel](https://vercel.com).
-3. Set `NEXT_PUBLIC_API_URL` to your production backend URL.
-4. Deploy.
+This repo is a monorepo (`frontend/` + `backend/`), so point Vercel at the
+`frontend` subdirectory.
+
+1. Push to GitHub, then import the repo in [Vercel](https://vercel.com).
+2. In the import screen (or Project Settings → General), set **Root
+   Directory** to `frontend`. Vercel auto-detects the Next.js framework
+   preset.
+3. Project Settings → Environment Variables: add `NEXT_PUBLIC_API_URL` set
+   to your deployed backend's URL (e.g. `https://your-service.onrender.com`,
+   no trailing slash). Apply it to Production (and Preview if you want
+   preview deploys to hit the same backend).
+4. Deploy. Vercel builds and hosts automatically on every push to `main`/`master`.
+5. Back on the backend host, add this Vercel URL to `CORS_ALLOWED_ORIGINS`
+   so the API accepts requests from it — the two deploys reference each
+   other's URLs.
 
 ## Villains Faced & How We Won
 
