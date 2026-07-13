@@ -1,7 +1,7 @@
 from django.conf import settings
-from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
+from django.views.static import serve
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -10,4 +10,13 @@ urlpatterns = [
     path("api/annotations/", include("annotations.urls")),
 ]
 
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# django.conf.urls.static.static() no-ops when DEBUG=False, which is always
+# true in production - call the underlying view directly so uploaded media
+# is served regardless of DEBUG.
+urlpatterns += [
+    re_path(
+        r"^%s(?P<path>.*)$" % settings.MEDIA_URL.lstrip("/"),
+        serve,
+        {"document_root": settings.MEDIA_ROOT},
+    ),
+]
