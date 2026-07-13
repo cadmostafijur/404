@@ -76,15 +76,16 @@ This repo is a monorepo (`frontend/` + `backend/`), so point Render at the
 1. Push to GitHub, then in [Render](https://render.com) create a **New Web
    Service** from this repo.
 2. Set **Root Directory** to `backend`.
-3. **Build Command**: `pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate`
+3. **Build Command**: `pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate && python manage.py create_demo_user`
 4. **Start Command**: `gunicorn config.wsgi:application --bind 0.0.0.0:$PORT`
 5. Set environment variables (Render dashboard → Environment):
    - `DJANGO_SECRET_KEY` — generate a fresh one, don't reuse the dev key
    - `DJANGO_DEBUG` = `False`
    - `DJANGO_ALLOWED_HOSTS` = `your-service.onrender.com`
    - `CORS_ALLOWED_ORIGINS` = `https://your-frontend.vercel.app`
-6. After the first deploy, open the Render **Shell** tab and run
-   `python manage.py create_demo_user` to seed the demo login.
+6. `create_demo_user` runs as part of the Build Command above (idempotent —
+   safe on every deploy) since **free-tier Render instances don't have
+   Shell access** to run one-off management commands manually.
 7. Static files are served by WhiteNoise (already wired into
    `MIDDLEWARE`/`STORAGES` in `config/settings.py`) — no separate static
    host needed.
